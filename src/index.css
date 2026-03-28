@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg-primary: #0A0E17;
+  --bg-secondary: #111827;
+  --bg-card: #1A2235;
+  --bg-card-hover: #1F2A42;
+  --bg-elevated: #243049;
+  --text-primary: #E8ECF4;
+  --text-secondary: #8892A8;
+  --text-muted: #5A6478;
+  --accent-teal: #4ECDC4;
+  --accent-teal-dim: rgba(78, 205, 196, 0.15);
+  --accent-teal-glow: rgba(78, 205, 196, 0.3);
+  --accent-coral: #FF6B6B;
+  --accent-gold: #FFE66D;
+  --accent-purple: #6C5CE7;
+  --accent-green: #00B894;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-active: rgba(78, 205, 196, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
