@@ -60,7 +60,7 @@ button {
 
 .app-shell {
   width: 100%;
-  max-width: 960px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
@@ -145,8 +145,8 @@ button {
 @media (min-width: 800px) {
   .page-shell.home-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
-    gap: 40px;
+    grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1.1fr);
+    gap: 48px;
     align-items: flex-start;
   }
 

@@ -98,6 +98,108 @@ function BreathingTimer({ protocol, boltScore, onClose, onComplete }) {
 
   const circumference = 2 * Math.PI * 120;
 
+  // Simple face-based breathing avatar
+  const FaceBreath = ({ phase, pct }) => {
+    const isInhale = phase === 'inhale';
+    const isExhale = phase === 'exhale';
+    const isHold = phase === 'hold' || phase === 'pause';
+    const isSip = phase === 'sip';
+
+    const cheekScale = isInhale || isSip ? 1 + pct * 0.08 : 1.08 - pct * 0.08;
+    const headTilt = isInhale ? -4 * pct : isExhale ? 4 * pct : 0;
+
+    return (
+      <motion.div
+        style={{ position: 'absolute', inset: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        animate={{ rotate: headTilt }}
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
+      >
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          {/* Head */}
+          <motion.circle
+            cx="60"
+            cy="52"
+            r="32"
+            fill="rgba(8,16,28,0.9)"
+            stroke="rgba(255,255,255,0.12)"
+            strokeWidth="1.5"
+            animate={isHold ? { opacity: [0.85, 1, 0.85] } : { opacity: 1 }}
+            transition={isHold ? { duration: 2.2, repeat: Infinity } : { duration: 0.2 }}
+          />
+          {/* Cheeks */}
+          <motion.ellipse
+            cx="60"
+            cy="60"
+            rx="18"
+            ry="12"
+            fill="rgba(88,225,214,0.12)"
+            animate={{ scale: cheekScale }}
+            style={{ transformOrigin: '60px 60px' }}
+          />
+          {/* Eyes */}
+          <g stroke="rgba(233,240,255,0.85)" strokeWidth="2.4" strokeLinecap="round">
+            <line x1="45" y1="48" x2="51" y2="48" />
+            <line x1="69" y1="48" x2="75" y2="48" />
+          </g>
+          {/* Nose */}
+          <path
+            d="M60 49 C58 54 58 58 60 60"
+            stroke="rgba(220,230,255,0.7)"
+            strokeWidth="1.8"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* Mouth */}
+          <motion.path
+            d={isExhale ? 'M48 66 Q60 70 72 66' : 'M48 67 Q60 72 72 67'}
+            stroke="rgba(220,230,255,0.8)"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* Air flow */}
+          {isInhale && (
+            <motion.path
+              d="M60 40 C56 35 52 32 48 30"
+              stroke={orbColor}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeOpacity="0.7"
+              initial={{ opacity: 0, pathLength: 0 }}
+              animate={{ opacity: [0, 1, 0], pathLength: [0, 1, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+          {isExhale && (
+            <motion.path
+              d="M60 70 C64 75 70 79 76 82"
+              stroke={orbColor}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeOpacity="0.8"
+              initial={{ opacity: 0, pathLength: 0 }}
+              animate={{ opacity: [0, 1, 0], pathLength: [0, 1, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+          {isSip && (
+            <motion.circle
+              cx="60"
+              cy="44"
+              r="4"
+              stroke="#ffd57e"
+              strokeWidth="1.5"
+              fill="none"
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: [0.4, 1.1, 0.4], opacity: [0, 1, 0] }}
+              transition={{ duration: 0.7, repeat: Infinity }}
+            />
+          )}
+        </svg>
+      </motion.div>
+    );
+  };
+
   if (state === 'complete') {
     return (
       <motion.div className="timer-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -136,7 +238,7 @@ function BreathingTimer({ protocol, boltScore, onClose, onComplete }) {
 
       {/* Breath visualisation */}
       <div style={{ width: '100%', maxWidth: 320, margin: '0 auto 28px' }}>
-        {/* Session ring (subtle) */}
+        {/* Session ring + face */}
         <div style={{ position: 'relative', width: 180, height: 180, margin: '0 auto 18px' }}>
           <svg width="180" height="180" style={{ transform: 'rotate(-90deg)' }}>
             <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
@@ -153,6 +255,9 @@ function BreathingTimer({ protocol, boltScore, onClose, onComplete }) {
               style={{ transition: 'stroke-dashoffset 0.1s linear, stroke 0.5s ease' }}
             />
           </svg>
+          {state !== 'ready' && (
+            <FaceBreath phase={currentPhase?.type} pct={Math.min(progress, 1)} />
+          )}
           {state !== 'ready' && (
             <motion.div
               animate={{ scale: orbScale, opacity: state === 'paused' ? 0.25 : 0.4 }}
@@ -999,9 +1104,9 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          {/* Navigation Bar */}
+      {/* Navigation Bar */}
           <nav style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: '100%', maxWidth: 480, background: 'rgba(17,24,39,0.92)',
+            width: '100%', maxWidth: 1240, background: 'rgba(17,24,39,0.92)',
             backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
             borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-around',
             padding: '8px 0 max(8px, env(safe-area-inset-bottom))', zIndex: 100 }}>
