@@ -134,41 +134,109 @@ function BreathingTimer({ protocol, boltScore, onClose, onComplete }) {
         {protocol.name}
       </div>
 
-      <div style={{ position: 'relative', width: 260, height: 260, marginBottom: 32 }}>
-        <svg width="260" height="260" style={{ transform: 'rotate(-90deg)' }}>
-          <circle cx="130" cy="130" r="120" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
-          <circle cx="130" cy="130" r="120" fill="none" stroke={orbColor} strokeWidth="4" strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * (1 - (state === 'ready' ? 0 : totalProgress))}
-            style={{ transition: 'stroke-dashoffset 0.1s linear, stroke 0.5s ease' }} />
-        </svg>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Breath visualisation */}
+      <div style={{ width: '100%', maxWidth: 320, margin: '0 auto 28px' }}>
+        {/* Session ring (subtle) */}
+        <div style={{ position: 'relative', width: 180, height: 180, margin: '0 auto 18px' }}>
+          <svg width="180" height="180" style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
+            <circle
+              cx="90"
+              cy="90"
+              r="80"
+              fill="none"
+              stroke={orbColor}
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * 80}
+              strokeDashoffset={(2 * Math.PI * 80) * (1 - (state === 'ready' ? 0 : totalProgress))}
+              style={{ transition: 'stroke-dashoffset 0.1s linear, stroke 0.5s ease' }}
+            />
+          </svg>
           {state !== 'ready' && (
-            <motion.div animate={{ scale: orbScale, opacity: state === 'paused' ? 0.3 : 0.5 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              style={{ width: 120, height: 120, borderRadius: '50%', position: 'absolute',
-                background: `radial-gradient(circle, ${orbColor}44, ${orbColor}08)`,
-                border: `1px solid ${orbColor}33` }} />
+            <motion.div
+              animate={{ scale: orbScale, opacity: state === 'paused' ? 0.25 : 0.4 }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                inset: 40,
+                borderRadius: '50%',
+                background: `radial-gradient(circle, ${orbColor}33, transparent)`,
+                border: `1px solid ${orbColor}33`
+              }}
+            />
           )}
-          {state === 'ready' ? (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 4 }}>Ready</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tap play to begin</div>
+          {state === 'ready' && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 4 }}>Ready to breathe</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Press play and follow the bar below</div>
             </div>
-          ) : (
-            <>
-              <motion.div key={phaseIndex} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                style={{ fontSize: '1.3rem', fontWeight: 500, marginBottom: 2, color: orbColor, zIndex: 2, textAlign: 'center' }}>
-                {currentPhase?.name}
-              </motion.div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', zIndex: 2, textAlign: 'center', maxWidth: 160 }}>
-                {currentPhase?.instruction}
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '2.8rem', fontWeight: 700, marginTop: 8, zIndex: 2 }}>
-                {Math.ceil(phaseDuration - phaseTime)}
-              </div>
-            </>
           )}
+        </div>
+
+        {/* Clear phase text + countdown */}
+        {state !== 'ready' && (
+          <div style={{ textAlign: 'center', marginBottom: 14 }}>
+            <motion.div
+              key={phaseIndex}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ fontSize: '1.25rem', fontWeight: 600, color: orbColor, marginBottom: 4 }}
+            >
+              {currentPhase?.name}
+            </motion.div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 6 }}>
+              {currentPhase?.instruction}
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '3rem', fontWeight: 700 }}>
+              {Math.ceil(phaseDuration - phaseTime)}
+            </div>
+          </div>
+        )}
+
+        {/* Primary breath bar */}
+        <div style={{ marginTop: state === 'ready' ? 8 : 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', marginBottom: 4, color: 'var(--text-muted)' }}>
+            <span>{currentPhase?.type === 'inhale' ? 'Inhale' : currentPhase?.type === 'exhale' ? 'Exhale' : 'Hold'}</span>
+            <span>{phaseDuration.toFixed(1)}s</span>
+          </div>
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            height: 20,
+            borderRadius: 999,
+            background: 'var(--bg-elevated)',
+            overflow: 'hidden',
+            border: '1px solid var(--border-subtle)'
+          }}>
+            <motion.div
+              key={`${phaseIndex}-${state === 'paused'}`}
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(progress, 1) * 100}%` }}
+              transition={{ duration: 0.2, ease: 'linear' }}
+              style={{
+                height: '100%',
+                borderRadius: 999,
+                background:
+                  currentPhase?.type === 'inhale'
+                    ? `linear-gradient(90deg, ${orbColor} 0%, ${orbColor}AA 60%, ${orbColor}44 100%)`
+                    : currentPhase?.type === 'exhale'
+                    ? `linear-gradient(90deg, ${orbColor}99 0%, ${orbColor}66 40%, ${orbColor}22 100%)`
+                    : `linear-gradient(90deg, ${orbColor}55, ${orbColor}33)`
+              }}
+            />
+          </div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 6, textAlign: 'center' }}>
+            Breathe so your rhythm matches the moving bar
+          </div>
         </div>
       </div>
 
@@ -372,7 +440,7 @@ function HomePage({ onStartExercise, userData }) {
   });
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
+    <div className="page-shell" style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
       {/* Header */}
       <div style={{ padding: '24px 0 8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -535,7 +603,7 @@ function LearnPage() {
   ];
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
+    <div className="page-shell" style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
       <div style={{ padding: '24px 0 16px' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em' }}>Learn</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginTop: 2, fontWeight: 300 }}>
@@ -586,7 +654,7 @@ function ProfilePage({ userData, onRetakeBolt, onClearData }) {
   const tierData = boltTier ? BOLT_TIERS[boltTier] : null;
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
+    <div className="page-shell" style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
       <div style={{ padding: '24px 0 16px' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em' }}>Profile</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginTop: 2, fontWeight: 300 }}>
@@ -850,7 +918,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', position: 'relative' }}>
+    <div className="app-shell" style={{ minHeight: '100dvh', position: 'relative' }}>
       <AnimatePresence mode="wait">
         {showTimer && activeProtocol && (
           <BreathingTimer key="timer" protocol={activeProtocol} boltScore={userData.boltScore}
