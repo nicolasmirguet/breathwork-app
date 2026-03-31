@@ -260,6 +260,39 @@ function BreathingTimer({ protocol, boltScore, onClose, onComplete }) {
         </button>
         <div style={{ width: 48 }} />
       </div>
+
+      {/* Breathing pattern explainer */}
+      <div style={{ width: '100%', maxWidth: 420, marginTop: 28, paddingTop: 18, borderTop: '1px solid var(--border-subtle)' }}>
+        <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--text-muted)', marginBottom: 12 }}>
+          How to follow the rhythm
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: 12, fontSize: '0.75rem' }}>
+          <div>
+            <div style={{ fontWeight: 600, color: '#58e1d6', marginBottom: 4 }}>Inhale</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+              Breathe in smoothly through your nose as the bar fills from left to right.
+            </div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: '#ffd57e', marginBottom: 4 }}>Sip</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+              When a phase says “sip”, add one small top‑up inhale at the end of the main breath.
+            </div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: '#ff7c8f', marginBottom: 4 }}>Exhale</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+              Gently breathe out through the nose, letting the bar empty back toward zero.
+            </div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: '#9badcc', marginBottom: 4 }}>Hold / Pause</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+              Stay still — no air in or out. Keep your body soft until the next phase begins.
+            </div>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -440,7 +473,8 @@ function HomePage({ onStartExercise, userData }) {
   });
 
   return (
-    <div className="page-shell" style={{ maxWidth: 480, margin: '0 auto', padding: '0 20px 100px' }}>
+    <div className="page-shell home-layout" style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px 100px' }}>
+      <div className="home-main">
       {/* Header */}
       <div style={{ padding: '24px 0 8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -478,7 +512,7 @@ function HomePage({ onStartExercise, userData }) {
       </div>
 
       {/* Panic Button */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '28px 0 20px', position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0 24px', position: 'relative' }}>
         <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%',
           border: '1px solid rgba(78,205,196,0.12)', animation: 'pulseRing 3s ease-out infinite' }} />
         <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%',
@@ -526,15 +560,15 @@ function HomePage({ onStartExercise, userData }) {
         ))}
       </div>
 
-      {/* Protocol List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Protocol Grid */}
+      <div className="protocol-grid">
         {filtered.map((p, i) => (
           <motion.div key={p.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }} onClick={() => onStartExercise(p)}
             style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-md)', padding: '16px 18px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.2s' }}
-            whileHover={{ backgroundColor: '#1F2A42', borderColor: 'rgba(78,205,196,0.3)', y: -1 }}>
+            whileHover={{ backgroundColor: '#1F2A42', borderColor: 'rgba(78,205,196,0.3)', y: -1, scale: 1.01 }}>
             <div style={{ width: 46, height: 46, borderRadius: 'var(--radius-sm)',
               background: `${CATEGORIES[p.category]?.color || '#4ECDC4'}15`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>
@@ -563,6 +597,12 @@ function HomePage({ onStartExercise, userData }) {
       </div>
 
       <style>{`@keyframes pulseRing{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.6);opacity:0}}`}</style>
+      </div>
+
+      {/* Desktop side rail */}
+      <aside className="home-side" style={{ display: 'none' }}>
+        {/* reserved for future insights / explanations */}
+      </aside>
     </div>
   );
 }

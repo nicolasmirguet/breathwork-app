@@ -60,13 +60,13 @@ button {
 
 .app-shell {
   width: 100%;
-  max-width: 520px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
 .page-shell {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .timer-screen {
@@ -134,4 +134,46 @@ button {
 
 .btn-full {
   width: 100%;
+}
+
+/* Responsive layout helpers */
+.page-inner {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+@media (min-width: 800px) {
+  .page-shell.home-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  .home-main {
+    padding-right: 8px;
+  }
+
+  .home-side {
+    position: sticky;
+    top: 90px;
+  }
+}
+
+.protocol-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 720px) {
+  .protocol-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1040px) {
+  .protocol-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
